@@ -1,0 +1,46 @@
+version: '3.4'
+
+volumes:
+  mysql-data: {}
+
+services:
+  mysql:
+    image: mysql:8.2.0
+    restart: unless-stopped
+    hostname: mysql
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      TZ: Asia/Bangkok
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: demo
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - 3306:3306
+
+  rabbitmq:
+    image: rabbitmq:3.13.3-management
+    hostname: "rabbitmq"
+    environment:
+      TZ: Asia/Bangkok
+    ports:
+        - 5672:5672
+        - 15672:15672
+
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    environment:
+      TZ: Asia/Bangkok
+
+  authentication:
+    image: ${DOCKER_REGISTRY-}authentication
+    build:
+      context: .
+      dockerfile: Authentication/Dockerfile
+    environment:
+      TZ: Asia/Bangkok
+
